@@ -12,8 +12,13 @@ import javax.swing.JTextPane;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.awt.GridLayout;
+import java.awt.List;
+
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.UIManager;
@@ -34,6 +39,9 @@ public class ATM extends JFrame {
 	private Banknote banknote;
 	private JTextPane maintext;
 	private Card card;
+	
+	private int wrongPin=0;
+	
 	
 	Timer timer = new Timer(5000, (e)->reset());
 
@@ -134,20 +142,55 @@ public class ATM extends JFrame {
 		lbl70.setBounds(10, 102, 46, 14);
 		panel.add(lbl70);
 		
+		
+		ATMCard c1= new ATMCard("name", "vorname", "00000000000000000000000001", "Raifaisen", "0001", "2525", "0000", false);
+		ATMCard c2= new ATMCard("name2", "vorname2", "00000000000000000000000002", "Raifaisen", "0001", "2525", "0000", false);
+		ATMCard c3= new ATMCard("name3", "vorname3", "00000000000000000000000003", "Raifaisen", "0001", "2525", "0000", false);
+
+		
+		
+		ATMCard[] cards = { c1, c2,c3};
+
+		JComboBox<String> cardList= new JComboBox<String>();// add list of cards
+		
+		for (int i = 0; i < cards.length; i++) {
+			cardList.addItem(cards[i].toString());
+			
+		}
+		cardList.addActionListener (new ActionListener () {
+		    public void actionPerformed(ActionEvent e) {
+				reset();
+	    }
+		});
+		
+		cardList.setBounds(10, 200, 70, 20);
+		contentPane.add(cardList);
+		
 		card = new Card();
 		card.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+				try {
+				card.setCard(cards[cardList.getSelectedIndex()]);
+				}catch (Exception e) {
+					System.out.println("No Card Selected");
+				}
+				
+				if(card.getCard().getIBAN() !=null&&card.getCard().getCardNumber()!=null && !card.getCard().isGespert()) {
 				card.moveToTarget(slot.getX()+10, slot.getY()+10);
 				maintext.setText("Enter your PIN, and press OK\n");
 				pinEntry = "";
 				lblCancel.setVisible(true);
 				lblOk.setVisible(true);
+				}
 			}
 		});
 		card.setBackground(Color.PINK);
 		card.setBounds(10, 245, 60, 90);
 		contentPane.add(card);
+		
+	    
+		
 		
 		slot = new JPanel();
 		slot.setBorder(new LineBorder(new Color(0, 0, 0), 4, true));
@@ -341,8 +384,9 @@ public class ATM extends JFrame {
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!lblOk.isVisible()) return;
-				if (pinEntry.compareTo("1234")==0) {
-					if (amount.length()>0) {
+				if (pinEntry.compareTo(card.getCard().getPin())==0) {
+					wrongPin=0;
+					if (amount.length()>0) {//pin check
 						// an amount was chosen, eject note
 						System.out.println("Ejecting amount: "+amount);
 						banknote.animate(amount);
@@ -361,6 +405,13 @@ public class ATM extends JFrame {
 					}
 				}
 				else {
+					wrongPin++;
+					if(wrongPin==3) {
+						card.getCard().karteSperren();
+						
+						System.err.println("karte gespert");
+//Remov car out of car list
+						}
 					System.err.println("Wrong PIN");
 					maintext.setText("PIN was incorrect. Try again.");
 					pinEntry="";

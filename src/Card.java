@@ -7,8 +7,32 @@ public class Card extends JPanel {
 	
 	int targetX, targetY;
 	
-	Timer timer = new Timer(20, (e)->update());
 
+	
+	Timer timer = new Timer(20, (e)->update());
+	
+	
+	ATMCard selectedCard=null;
+	
+
+	
+	
+	public void setCard(ATMCard card) {
+		
+		selectedCard=card;
+	}
+	public ATMCard getCard() {
+		return selectedCard;
+	}
+
+	
+	
+	
+	
+
+	
+	
+	//layout ecta
 	public Card() {
 		setLayout(null);
 	}
