@@ -5,24 +5,25 @@ public class ATMCard {
 	String name;
 	String vorname;
 	String IBAN;
-	String Bankbezeichnung;
+	String kontoBezeichnung;
+	
+	String bankbezeichnung;
 	String cardNumber;
 	String validDate;
 	String pin;
 	
 	
 	
-	boolean gespert=false;
 	
-	public void karteSperren() {
-		gespert=true;
+	
+	
+	public String getKontoBezeichnung() {
+		return kontoBezeichnung;
 	}
-	
-	public boolean isGespert() {
-		return gespert;
+
+	public void setKontoBezeichnung(String kontoBezeichnung) {
+		this.kontoBezeichnung = kontoBezeichnung;
 	}
-	
-	
 	
 	
 	
@@ -37,17 +38,17 @@ public class ATMCard {
 
 
 
-	public ATMCard(String name, String vorname, String iBAN, String bankbezeichnung, String cardNumber, String validDate,
-			String pin, boolean gespert) {
+	public ATMCard(String name, String vorname,String kontoBezeichnung, String iBAN, String bankbezeichnung, String cardNumber, String validDate,
+			String pin) {
 		super();
 		this.name = name;
 		this.vorname = vorname;
-		IBAN = iBAN;
-		Bankbezeichnung = bankbezeichnung;
+		this.kontoBezeichnung=kontoBezeichnung;
+		this.IBAN = iBAN;
+		this.bankbezeichnung = bankbezeichnung;
 		this.cardNumber = cardNumber;
 		this.validDate = validDate;
 		this.pin = pin;
-		this.gespert = gespert;
 	}
 
 
@@ -75,10 +76,10 @@ public class ATMCard {
 		IBAN = iBAN;
 	}
 	public String getBankbezeichnung() {
-		return Bankbezeichnung;
+		return bankbezeichnung;
 	}
 	public void setBankbezeichnung(String bankbezeichnung) {
-		Bankbezeichnung = bankbezeichnung;
+		bankbezeichnung = bankbezeichnung;
 	}
 	public String getCardNumber() {
 		return cardNumber;

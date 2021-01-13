@@ -39,9 +39,19 @@ public class ATM extends JFrame {
 	private Banknote banknote;
 	private JTextPane maintext;
 	private Card card;
+	boolean cardsAvalable;
 	
 	private int wrongPin=0;
+	//TODO mak card wit files //also listlie of bloked cards
+	//TODO MAKE READING OF FILES AND WRITING
 	
+	ArrayList<ATMCard>cards = new ArrayList<ATMCard>();
+	JComboBox<String> cardList= new JComboBox<String>();// add list of cards
+	ReadWrite readWrite= new ReadWrite();
+
+
+
+	//TODO richtigen nort sutrahiren rechnen ecta
 	
 	Timer timer = new Timer(5000, (e)->reset());
 
@@ -143,20 +153,10 @@ public class ATM extends JFrame {
 		panel.add(lbl70);
 		
 		
-		ATMCard c1= new ATMCard("name", "vorname", "00000000000000000000000001", "Raifaisen", "0001", "2525", "0000", false);
-		ATMCard c2= new ATMCard("name2", "vorname2", "00000000000000000000000002", "Raifaisen", "0001", "2525", "0000", false);
-		ATMCard c3= new ATMCard("name3", "vorname3", "00000000000000000000000003", "Raifaisen", "0001", "2525", "0000", false);
-
 		
 		
-		ATMCard[] cards = { c1, c2,c3};
-
-		JComboBox<String> cardList= new JComboBox<String>();// add list of cards
+		setCards();
 		
-		for (int i = 0; i < cards.length; i++) {
-			cardList.addItem(cards[i].toString());
-			
-		}
 		cardList.addActionListener (new ActionListener () {
 		    public void actionPerformed(ActionEvent e) {
 				reset();
@@ -171,12 +171,12 @@ public class ATM extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				try {
-				card.setCard(cards[cardList.getSelectedIndex()]);
+				card.setCard(cards.get(cardList.getSelectedIndex()));
 				}catch (Exception e) {
-					System.out.println("No Card Selected");
+					System.out.println("No Valid Card Selected");
 				}
 				
-				if(card.getCard().getIBAN() !=null&&card.getCard().getCardNumber()!=null && !card.getCard().isGespert()) {
+				if(cardsAvalable&&card.getCard().getIBAN() !=null&&card.getCard().getCardNumber()!=null  ) {
 				card.moveToTarget(slot.getX()+10, slot.getY()+10);
 				maintext.setText("Enter your PIN, and press OK\n");
 				pinEntry = "";
@@ -407,14 +407,15 @@ public class ATM extends JFrame {
 				else {
 					wrongPin++;
 					if(wrongPin==3) {
-						card.getCard().karteSperren();
-						
+						readWrite.addLockedCard(card.getCard().getCardNumber());//Addes Card to Loked Card File
+
+						reset();
 						System.err.println("karte gespert");
-//Remov car out of car list
-						}
+					}else {
 					System.err.println("Wrong PIN");
 					maintext.setText("PIN was incorrect. Try again.");
 					pinEntry="";
+					}
 				}
 				
 			}
@@ -455,6 +456,8 @@ public class ATM extends JFrame {
 	}
 	
 	public void reset() {
+		setCards();
+		wrongPin=0;
 		// Two lines of code that clear the variables pinEntry and amount.
 		pinEntry=""; amount="";
 		// A line that makes the banknote invisible again, using setVisible(false) method.
@@ -465,5 +468,23 @@ public class ATM extends JFrame {
 		// A line that sets the original welcome text to maintext.
 		maintext.setText("Welcome to ID Bank, please enter your card.");
 		timer.stop();
+	}
+	public void setCards(){
+cardList.removeAllItems();
+cards=readWrite.readCards();
+	
+		if(cards.size()==0) {
+			maintext.setText("Keine Karten Verfügbar Entsperre karten");
+			cardsAvalable=false;
+		}else {
+			cardsAvalable=true;
+		}
+		
+		for (int i = 0; i < cards.size(); i++) {
+			
+			cardList.addItem(cards.get(i).toString());
+			
+		}
+		System.out.println(cardList.getItemCount());//ToDO Bug Card is not removed from visable list
 	}
 }
