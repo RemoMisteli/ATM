@@ -163,7 +163,7 @@ public class ATM extends JFrame {
 	    }
 		});
 		
-		cardList.setBounds(10, 200, 70, 20);
+		cardList.setBounds(10, 200, 95, 20);
 		contentPane.add(cardList);
 		
 		card = new Card();
@@ -468,8 +468,11 @@ public class ATM extends JFrame {
 		// A line that sets the original welcome text to maintext.
 		maintext.setText("Welcome to ID Bank, please enter your card.");
 		timer.stop();
+
 	}
 	public void setCards(){
+	//Bug when a card get locked the remove of all items dosen't work correctly. the function gets called multiple times but the remove all items only work the first time
+		//I checked the bug whit Gehri an he said its okey to let it be
 cardList.removeAllItems();
 cards=readWrite.readCards();
 	
@@ -479,12 +482,14 @@ cards=readWrite.readCards();
 		}else {
 			cardsAvalable=true;
 		}
-		
+
+		System.out.println(cardList.getItemCount());
+
 		for (int i = 0; i < cards.size(); i++) {
-			
+	
 			cardList.addItem(cards.get(i).toString());
 			
 		}
-		System.out.println(cardList.getItemCount());//ToDO Bug Card is not removed from visable list
+		System.out.println(cardList.getItemCount());
 	}
 }
